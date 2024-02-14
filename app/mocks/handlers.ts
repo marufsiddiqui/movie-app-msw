@@ -59,20 +59,7 @@ export const handlers = [
     return HttpResponse.json(user);
   }),
 
-  /**
-   *      query ListReviews($movieId: ID!) {
-   *         reviews(movieId: $movieId) {
-   *           id
-   *           text
-   *           rating
-   *           author {
-   *             firstName
-   *             avatarUrl
-   *           }
-   *         }
-   *       }
-   */
-  graphql.query('ListReviews', async ({ query, variables }) => {
+  graphql.operation(async ({ variables, query }) => {
     const { data, errors } = await executeGraphql({
       schema,
       source: query,
@@ -82,50 +69,29 @@ export const handlers = [
           const movie = movies.find((movie) => movie.id === args.movieId);
           return movie?.reviews || [];
         },
+        addReview(args) {
+          const { author, reviewInput } = args;
+          const { movieId, ...review } = reviewInput;
+          const movie = movies.find((movie) => movie.id === movieId);
+
+          if (!movie) {
+            throw new Error('Invalid movie id');
+          }
+
+          const newReview = {
+            ...review,
+            id: Math.random().toString(16).slice(2),
+            author,
+          };
+
+          const prevReviews = movie?.reviews || [];
+          movie.reviews = [...prevReviews, newReview];
+
+          return newReview;
+        },
       },
     });
 
     return HttpResponse.json({ data, errors });
-  }),
-
-  /*
-  mutation AddReview($author: UserInput!, $reviewInput: ReviewInput!) {
-    addReview(author: $author, reviewInput: $reviewInput) {
-      id
-      text
-      author {
-        id
-        firstName
-        avatarUrl
-      }
-    }
-  }
-  */
-  graphql.mutation('AddReview', async ({ variables }) => {
-    const { author, reviewInput } = variables;
-    const { movieId, ...review } = reviewInput;
-    const movie = movies.find((movie) => movie.id === movieId);
-
-    if (!movie) {
-      return HttpResponse.json({
-        data: null,
-        errors: [new Error('Invalid movie id')],
-      });
-    }
-
-    const newReview = {
-      ...review,
-      id: Math.random().toString(16).slice(2),
-      author,
-    };
-
-    const prevReviews = movie?.reviews || [];
-    movie.reviews = [...prevReviews, newReview];
-
-    return HttpResponse.json({
-      data: {
-        addReview: newReview,
-      },
-    });
   }),
 ];
