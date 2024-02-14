@@ -1,14 +1,15 @@
-import { MovieThumbnail } from './movieThumbnail'
-import { ErrorBanner } from './errorBanner'
-import { useRequest } from '~/hooks/useRequest'
-import type { Movie } from '~/types'
+import { MovieThumbnail } from './movieThumbnail';
+import { ErrorBanner } from './errorBanner';
+import { useRequest } from '~/hooks/useRequest';
+import type { Movie } from '~/types';
 
-export function RecommendedMovies() {
-  const { state, error, data } =
-    useRequest<Array<Movie>>(`/api/recommendations`)
+export function RecommendedMovies({ movieId }: { movieId: string }) {
+  const { state, error, data } = useRequest<Array<Movie>>(
+    `/api/recommendations?movieId=${movieId}`
+  );
 
   if (state === 'idle' || (state === 'done' && data == null && error == null)) {
-    return null
+    return null;
   }
 
   return (
@@ -43,5 +44,5 @@ export function RecommendedMovies() {
         <p className="text-neutral-500">No recommendations found.</p>
       )}
     </section>
-  )
+  );
 }
