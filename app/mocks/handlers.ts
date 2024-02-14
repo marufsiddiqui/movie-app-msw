@@ -20,6 +20,23 @@ customerService.query('ListReviews', () => {
 });
 
 export const handlers = [
+  http.get('https://api.example.com/movies/:slug/stream', async () => {
+    const videoResponse = await fetch(
+      'https://nickdesaulniers.github.io/netfix/demo/frag_bunny.mp4'
+    );
+    const videoStream = videoResponse.body;
+    const latencyStream = new TransformStream({
+      start() {},
+      async transform(chunk, controller) {
+        await delay(1500);
+        controller.enqueue(chunk);
+      },
+    });
+    return new HttpResponse(
+      videoStream?.pipeThrough(latencyStream),
+      videoResponse
+    );
+  }),
   http.get('/api/featured', async ({ request }) => {
     const response = await fetch(bypass(request));
     const originalMovies = await response.json();
