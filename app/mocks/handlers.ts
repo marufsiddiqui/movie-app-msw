@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse, graphql } from 'msw';
 
 const reviews = [
   {
@@ -102,5 +102,28 @@ export const handlers = [
     };
 
     return HttpResponse.json(user);
+  }),
+
+  /**
+   *      query ListReviews($movieId: ID!) {
+   *         reviews(movieId: $movieId) {
+   *           id
+   *           text
+   *           rating
+   *           author {
+   *             firstName
+   *             avatarUrl
+   *           }
+   *         }
+   *       }
+   */
+  graphql.query('ListReviews', async ({ variables }) => {
+    const { movieId } = variables;
+    const movie = movies.find((movie) => movie.id === movieId);
+    const reviews = movie?.reviews || [];
+
+    return HttpResponse.json({
+      data: { reviews },
+    });
   }),
 ];
