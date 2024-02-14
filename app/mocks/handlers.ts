@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse, graphql } from 'msw';
+import { delay, http, HttpResponse, graphql, passthrough } from 'msw';
 import { graphql as executeGraphql } from 'graphql';
 import { schema } from './graphqlSchema';
 
@@ -49,6 +49,10 @@ export const handlers = [
 
     if (movieId === 'b2b7e2d9-8b2e-4b7a-9b8a-7f9a0d7f7e0e') {
       return new HttpResponse(null, { status: 500 });
+    }
+
+    if (movieId === 'b2b7e2d9-8b2e-4b7a-9b8a-7f9a0d7f7e0e') {
+      return passthrough();
     }
 
     const recommendations = movies.filter((movie) => movie.id !== movieId);
