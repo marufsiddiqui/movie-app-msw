@@ -4,6 +4,21 @@ import { schema } from './graphqlSchema';
 
 import { movies } from './mockData';
 
+const customerService = graphql.link('https://api.example.com/review-service');
+
+customerService.query('ListReviews', () => {
+  return HttpResponse.json({
+    data: {
+      serviceReviews: [
+        {
+          id: '4569870f-f0d6-4187-843f-a25aadf948eb8061539f-f0d6-4187-843f-a25aadf948eb',
+          message: 'Hello World',
+        },
+      ],
+    },
+  });
+});
+
 export const handlers = [
   http.get('https://api.example.com/movies/featured', () => {
     return HttpResponse.json(movies);
