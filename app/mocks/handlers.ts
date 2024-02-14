@@ -62,4 +62,7 @@ export const handlers = [
 
     return HttpResponse.json(movie);
   }),
+  http.get('/api/recommendations', () => {
+    return HttpResponse.json(movies.slice(0, 2));
+  }),
 ];
