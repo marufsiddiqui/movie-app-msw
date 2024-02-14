@@ -66,6 +66,8 @@ export const handlers = [
     const url = new URL(request.url);
     const movieId = url.searchParams.get('movieId');
 
+    // return HttpResponse.error() // this is a network error, fetch api will fail, it means request was not processed or even reached the server
+
     if (!movieId) {
       return HttpResponse.json(
         { error: 'Missing query param "movieId"' },
