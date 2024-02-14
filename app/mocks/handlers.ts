@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 
 const reviews = [
   {
@@ -62,11 +62,13 @@ export const handlers = [
 
     return HttpResponse.json(movie);
   }),
-  http.get('/api/recommendations', ({ request }) => {
+  http.get('/api/recommendations', async ({ request }) => {
     const url = new URL(request.url);
     const movieId = url.searchParams.get('movieId');
 
     // return HttpResponse.error() // this is a network error, fetch api will fail, it means request was not processed or even reached the server
+
+    await delay('real'); // real (default) or infinite
 
     if (!movieId) {
       return HttpResponse.json(
