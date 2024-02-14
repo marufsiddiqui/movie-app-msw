@@ -126,4 +126,45 @@ export const handlers = [
       data: { reviews },
     });
   }),
+
+  /*
+  mutation AddReview($author: UserInput!, $reviewInput: ReviewInput!) {
+    addReview(author: $author, reviewInput: $reviewInput) {
+      id
+      text
+      author {
+        id
+        firstName
+        avatarUrl
+      }
+    }
+  }
+  */
+  graphql.mutation('AddReview', async ({ variables }) => {
+    const { author, reviewInput } = variables;
+    const { movieId, ...review } = reviewInput;
+    const movie = movies.find((movie) => movie.id === movieId);
+
+    if (!movie) {
+      return HttpResponse.json({
+        data: null,
+        errors: [new Error('Invalid movie id')],
+      });
+    }
+
+    const newReview = {
+      ...review,
+      id: Math.random().toString(16).slice(2),
+      author,
+    };
+
+    const prevReviews = movie?.reviews || [];
+    movie.reviews = [...prevReviews, newReview];
+
+    return HttpResponse.json({
+      data: {
+        addReview: newReview,
+      },
+    });
+  }),
 ];
